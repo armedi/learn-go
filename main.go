@@ -35,8 +35,8 @@ func main() {
 		w.Write([]byte("pong"))
 	})
 	r.Route("/user", func(c chi.Router) {
-		r.Post("/login", userHandler.Login)
 		r.Post("/register", userHandler.Register)
+		r.Post("/login", userHandler.Login)
 	})
 
 	http.ListenAndServe(":3000", r)

@@ -1,6 +1,8 @@
 package user
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+)
 
 // User ...
 type User struct {
@@ -11,6 +13,6 @@ type User struct {
 
 // RegisterRequest - data sent in request body
 type RegisterRequest struct {
-	Email    string `json:"email" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
 }
