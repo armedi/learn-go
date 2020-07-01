@@ -25,6 +25,8 @@ func (ug *userGorm) Create(user *User) error {
 
 func (ug *userGorm) GetByEmail(email string) (*User, error) {
 	var u User
-	ug.DB.Where("email = ?", email).First(&u)
+	if err := ug.DB.Where("email = ?", email).First(&u).Error; err != nil {
+		return nil, err
+	}
 	return &u, nil
 }

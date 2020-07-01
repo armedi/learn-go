@@ -7,8 +7,9 @@ import (
 // User ...
 type User struct {
 	gorm.Model
-	Email    string `gorm:"type:varchar(100);not null;unique_index"`
-	Password string `gorm:"type:varchar(100);not null"`
+	Email        string `gorm:"type:varchar(100);not null;unique_index"`
+	Password     string `gorm:"-"`
+	PasswordHash string `gorm:"column:password;type:varchar(100);not null"`
 }
 
 // RegisterRequest - data sent in request body
