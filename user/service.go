@@ -1,9 +1,6 @@
 package user
 
 import (
-	"errors"
-	"fmt"
-
 	"github.com/go-playground/validator/v10"
 )
 
@@ -19,7 +16,7 @@ type userService struct {
 
 type userValidator struct {
 	*userService
-	validator *validator.Validate
+	validate *validator.Validate
 }
 
 // NewService create an object that represent the Service interface
@@ -28,7 +25,7 @@ func NewService(userRepo Repository) Service {
 		userService: &userService{
 			repo: userRepo,
 		},
-		validator: validator.New(),
+		validate: validator.New(),
 	}
 }
 
@@ -47,22 +44,8 @@ func (us *userService) Login(email, password string) (string, error) {
 }
 
 func (uv *userValidator) Register(user *RegisterRequest) error {
-	if err := uv.validator.Struct(user); err != nil {
-		errs := err.(validator.ValidationErrors)
-		switch errs[0].Field() {
-		case "Email":
-			switch errs[0].Tag() {
-			case "required":
-				return errors.New("Kolom email tidak boleh dikosongkan")
-			case "email":
-				return fmt.Errorf("Kolom email dengan isian %s tidak valid", errs[0].Value())
-			}
-		case "Password":
-			switch errs[0].Tag() {
-			case "required":
-				return errors.New("Kolom password tidak boleh dikosongkan")
-			}
-		}
+	if err := uv.validate.Struct(user); err != nil {
+		return parseValidationError(err)
 	}
 	return uv.userService.Register(user)
 }

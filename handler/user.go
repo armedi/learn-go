@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
+	"github.com/armedi/learn-go/lib/api"
 	"github.com/armedi/learn-go/user"
 )
 
@@ -27,14 +27,14 @@ func NewUserHandler(us user.Service) UserHandler {
 func (uh *userHandler) Register(w http.ResponseWriter, r *http.Request) {
 	data := &user.RegisterRequest{}
 	if err := parseBody(r, data); err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		api.Render(w, err)
 		return
 	}
 	if err := uh.userService.Register(data); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		api.Render(w, err)
 		return
 	}
-	fmt.Fprintln(w, data)
+	api.Render(w, data)
 }
 
 func (uh *userHandler) Login(w http.ResponseWriter, r *http.Request) {
