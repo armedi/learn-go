@@ -14,15 +14,15 @@ type Service interface {
 }
 
 type userService struct {
-	repo     Repository
-	validate *validator.Validate
+	UserRepo Repository
+	Validate *validator.Validate
 }
 
 // NewService create an object that represent the Service interface
-func NewService(userRepo Repository) Service {
+func NewService(repo Repository) Service {
 	return &userService{
-		repo:     userRepo,
-		validate: validator.New(),
+		UserRepo: repo,
+		Validate: validator.New(),
 	}
 }
 
@@ -30,19 +30,23 @@ func (us *userService) Register(form *RegisterRequest) error {
 	if err := us.validateForm(form); err != nil {
 		return err
 	}
-	if err := runUserValidationFuncs(User{Email: form.Email}, us.emailIsAvailable); err != nil {
+
+	user := User{
+		Email:    form.Email,
+		Password: form.Password,
+	}
+
+	if err := runUserValidationFuncs(user, us.emailIsAvailable); err != nil {
 		return err
 	}
 
-	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(form.Password), bcrypt.DefaultCost)
+	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return err
 	}
+	user.PasswordHash = string(hashedBytes)
 
-	return us.repo.Create(&User{
-		Email:        form.Email,
-		PasswordHash: string(hashedBytes),
-	})
+	return us.UserRepo.Create(&user)
 }
 
 func (us *userService) Login(form *LoginRequest) (string, error) {
@@ -59,7 +63,7 @@ func (us *userService) Login(form *LoginRequest) (string, error) {
 }
 
 func (us *userService) authenticateLogin(email string, password string) (*User, error) {
-	user, err := us.repo.GetByEmail(email)
+	user, err := us.UserRepo.GetByEmail(email)
 
 	if err != nil {
 		switch err {
@@ -83,19 +87,8 @@ func (us *userService) authenticateLogin(email string, password string) (*User, 
 	return user, nil
 }
 
-type userValidationFunc func(User) error
-
-func runUserValidationFuncs(user User, fns ...userValidationFunc) error {
-	for _, fn := range fns {
-		if err := fn(user); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 func (us *userService) validateForm(form interface{}) error {
-	if err := us.validate.Struct(form); err != nil {
+	if err := us.Validate.Struct(form); err != nil {
 		errs := err.(validator.ValidationErrors)
 		switch errs[0].Field() {
 		case "Email":
@@ -115,8 +108,19 @@ func (us *userService) validateForm(form interface{}) error {
 	return nil
 }
 
+type userValidationFunc func(User) error
+
+func runUserValidationFuncs(user User, fns ...userValidationFunc) error {
+	for _, fn := range fns {
+		if err := fn(user); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (us *userService) emailIsAvailable(user User) error {
-	_, err := us.repo.GetByEmail(user.Email)
+	_, err := us.UserRepo.GetByEmail(user.Email)
 	if err != nil {
 		switch err {
 		case errRecordNotFound:
