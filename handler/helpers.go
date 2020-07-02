@@ -10,7 +10,7 @@ import (
 func parseBody(r *http.Request, dst interface{}) error {
 	err := json.NewDecoder(r.Body).Decode(dst)
 	if err != nil {
-		return api.ErrBadRequest(err.Error(), "")
+		return api.NewErrBadRequest(err.Error(), "")
 	}
 	return nil
 }

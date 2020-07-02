@@ -34,9 +34,19 @@ func (uh *userHandler) Register(w http.ResponseWriter, r *http.Request) {
 		api.Render(w, err)
 		return
 	}
-	api.Render(w, data)
+	api.Render(w, nil)
 }
 
 func (uh *userHandler) Login(w http.ResponseWriter, r *http.Request) {
-
+	data := &user.LoginRequest{}
+	if err := parseBody(r, data); err != nil {
+		api.Render(w, err)
+		return
+	}
+	token, err := uh.userService.Login(data)
+	if err != nil {
+		api.Render(w, err)
+		return
+	}
+	api.Render(w, user.LoginResponse{AccessToken: token})
 }

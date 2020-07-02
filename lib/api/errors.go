@@ -21,13 +21,22 @@ func createErrorResponse(message string, code string, httpStatus int) ErrorRespo
 	return result
 }
 
-// ErrBadRequest ...
-func ErrBadRequest(message string, code string) ErrorResponse {
+// NewErrBadRequest 400
+func NewErrBadRequest(message string, code string) ErrorResponse {
 	return createErrorResponse(message, code, http.StatusBadRequest)
 }
 
-// ErrConflict ...
-func ErrConflict(message string, code string) ErrorResponse {
-	return createErrorResponse(message, code, http.StatusConflict)
+// NewErrUnauthorized 401
+func NewErrUnauthorized(message string, code string) ErrorResponse {
+	return createErrorResponse(message, code, http.StatusUnauthorized)
+}
 
+// NewErrNotFound 404
+func NewErrNotFound(message string, code string) ErrorResponse {
+	return createErrorResponse(message, code, http.StatusNotFound)
+}
+
+// NewErrConflict 409
+func NewErrConflict(message string, code string) ErrorResponse {
+	return createErrorResponse(message, code, http.StatusConflict)
 }
