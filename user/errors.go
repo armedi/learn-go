@@ -1,7 +1,6 @@
 package user
 
 import (
-	"github.com/go-playground/validator/v10"
 	"github.com/jinzhu/gorm"
 
 	"github.com/armedi/learn-go/lib/api"
@@ -15,24 +14,3 @@ var (
 	errEmailTaken            error = api.NewErrConflict("Email sudah terdaftar", "")
 	errEmailPasswordMismatch error = api.NewErrUnauthorized("Alamat email atau password salah", "")
 )
-
-func parseValidationError(e error) error {
-	errs, ok := e.(validator.ValidationErrors)
-	if ok {
-		switch errs[0].Field() {
-		case "Email":
-			switch errs[0].Tag() {
-			case "required":
-				return errEmailRequired
-			case "email":
-				return errEmailInvalid
-			}
-		case "Password":
-			switch errs[0].Tag() {
-			case "required":
-				return errPasswordRequired
-			}
-		}
-	}
-	return e
-}
