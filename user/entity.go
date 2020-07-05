@@ -12,19 +12,16 @@ type User struct {
 	PasswordHash string `gorm:"column:password;type:varchar(100);not null"`
 }
 
-type authenticationRequest struct {
+// RegisterRequest - data received in register request body
+type RegisterRequest struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
 }
 
-// RegisterRequest - data received in register request body
-type RegisterRequest struct {
-	authenticationRequest
-}
-
 // LoginRequest - data received in login request body
 type LoginRequest struct {
-	authenticationRequest
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
 }
 
 // LoginResponse - data sent in login response body
