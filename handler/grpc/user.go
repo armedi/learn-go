@@ -39,6 +39,6 @@ func (us *userServer) Login(ctx context.Context, form *pb.LoginRequest) (*pb.Log
 		return nil, err
 	}
 	return &pb.LoginResponse{
-		Token: token,
+		AccessToken: token,
 	}, nil
 }

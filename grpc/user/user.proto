@@ -1,12 +1,24 @@
 syntax = "proto3";
 
-option go_package = "github.com/armedi/learn-go/grpc/user";
-
 package user;
 
+import "google/api/annotations.proto";
+
+option go_package = "github.com/armedi/learn-go/grpc/user";
+
 service User {
-  rpc Login (LoginRequest) returns (LoginResponse) {   }
-  rpc Register (RegisterRequest) returns (RegisterResponse) {}
+  rpc Login(LoginRequest) returns (LoginResponse) {
+    option (google.api.http) = {
+      post: "/login"
+      body: "*"
+    };
+  }
+  rpc Register(RegisterRequest) returns (RegisterResponse) {
+    option (google.api.http) = {
+      post: "/register"
+      body: "*"
+    };
+  }
 }
 
 message LoginRequest {
@@ -15,7 +27,7 @@ message LoginRequest {
 }
 
 message LoginResponse {
-  string token = 1;
+  string access_token = 1;
 }
 
 message RegisterRequest {

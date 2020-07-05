@@ -4,6 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // SuccessResponse is the standard response format for 2xx responses
@@ -15,14 +18,20 @@ type SuccessResponse struct {
 
 // ErrorResponse is the standard response format for non-2xx responses
 type ErrorResponse struct {
-	Success    bool   `json:"success"`
-	Message    string `json:"message,omitempty"`
-	ErrorCode  string `json:"error_code"`
-	HTTPStatus int    `json:"-"`
+	Success    bool       `json:"success"`
+	Message    string     `json:"message,omitempty"`
+	ErrorCode  string     `json:"error_code"`
+	HTTPStatus int        `json:"-"`
+	GRPCCode   codes.Code `json:"-"`
 }
 
 func (resp ErrorResponse) Error() string {
 	return resp.Message
+}
+
+// GRPCStatus returns grpc status
+func (resp ErrorResponse) GRPCStatus() *status.Status {
+	return status.New(resp.GRPCCode, resp.Message)
 }
 
 // Render ...
